@@ -1,5 +1,6 @@
 import { Course } from "./APIObjects/Course.js";
 import { CourseParticipation } from "./APIObjects/CourseParticipation.js";
+import { Plane } from "./APIObjects/Plane.js";
 import { User } from "./APIObjects/User.js";
 
 export class API {
@@ -37,7 +38,7 @@ export class API {
         }
 
 
-        static getUsers(): Promise<Array<User>> {
+        static getUsers(body?: Object): Promise<Array<User>> {
                 return new Promise((resolve, reject) => {
                     const getUsersRequest = new XMLHttpRequest();
                 getUsersRequest.open("POST", `${API.address}/getusers`);
@@ -71,7 +72,7 @@ export class API {
             }
             // loginRequest.setRequestHeader("Accept", "application/json")
             getUsersRequest.setRequestHeader("Content-type", "application/json");
-            getUsersRequest.send();
+            getUsersRequest.send(JSON.stringify(body));
                 })
         }
 
@@ -138,24 +139,26 @@ export class API {
         })
 }
 
-static getPlanes(): Promise<Array<CourseParticipation>> {
+static getPlanes(): Promise<Array<Plane>> {
     return new Promise((resolve, reject) => {
         const getPlanesRequest = new XMLHttpRequest();
-    getPlanesRequest.open("POST", `${API.address}/getcourses`);
+    getPlanesRequest.open("POST", `${API.address}/getplanes`);
     getPlanesRequest.onreadystatechange = () => {
         if(getPlanesRequest.readyState === 4){
             if(getPlanesRequest.status === 200){
                 const response = JSON.parse(getPlanesRequest.responseText);
                 if(response.success == true){
-                    const coursesParticipations: Array<CourseParticipation> = [];
-                    response.coursesParticipations.forEach((courseParticipation: any) => {
-                        coursesParticipations.push(new CourseParticipation(
-                            courseParticipation.user_id,
-                            courseParticipation.course_id,
-                            courseParticipation.participation_date_time,
-                            courseParticipation.status
+                    const planes: Array<Plane> = [];
+                    response.planes.forEach((plane: any) => {
+                        planes.push(new Plane(
+                            plane.id,
+                            plane.picture,
+                            plane.horometer,
+                            plane.plane_name,
+                            plane.plane_type,
+                            plane.hourly_price
                         ));
-                        resolve(coursesParticipations);
+                        resolve(planes);
                     });
                 } else {
                     reject(new Error(response.error));
@@ -163,6 +166,8 @@ static getPlanes(): Promise<Array<CourseParticipation>> {
             }
         }
     }
+    getPlanesRequest.setRequestHeader("Content-type", "application/json");
+    getPlanesRequest.send();
 });
 }
 
@@ -205,6 +210,28 @@ static getPlanes(): Promise<Array<CourseParticipation>> {
         // loginRequest.setRequestHeader("Accept", "application/json")
         deleteRequest.setRequestHeader("Content-type", "application/json");
         deleteRequest.send();
+    } catch(e) {
+        console.log(e);
+    }
+    }
+
+    static getPlaneDisponibility(body: Object) {
+        try{
+            const editRequest = new XMLHttpRequest();
+            editRequest.open("PATCH", `${API.address}/planedisponibility}`);
+            editRequest.onreadystatechange = () => {
+                if(editRequest.readyState === 4){
+                    if(editRequest.status === 200){
+                        const userInfos = JSON.parse(editRequest.responseText);
+                        if(userInfos.success == true){
+                            return true;
+                        }
+                    }
+                }
+        }
+        // loginRequest.setRequestHeader("Accept", "application/json")
+        editRequest.setRequestHeader("Content-type", "application/json");
+        editRequest.send(JSON.stringify(body));
     } catch(e) {
         console.log(e);
     }
