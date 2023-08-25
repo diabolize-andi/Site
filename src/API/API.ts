@@ -215,25 +215,47 @@ static getPlanes(): Promise<Array<Plane>> {
     }
     }
 
-    static getPlaneDisponibility(body: Object) {
-        try{
-            const editRequest = new XMLHttpRequest();
-            editRequest.open("PATCH", `${API.address}/planedisponibility}`);
-            editRequest.onreadystatechange = () => {
-                if(editRequest.readyState === 4){
-                    if(editRequest.status === 200){
-                        const userInfos = JSON.parse(editRequest.responseText);
-                        if(userInfos.success == true){
-                            return true;
+    static getPlaneDisponibility(body: Object): Promise<boolean> {
+
+            const planeDispoRequest = new XMLHttpRequest();
+            return new Promise((resolve) => {
+                planeDispoRequest.open("POST", `${API.address}/planedisponibility`);
+                planeDispoRequest.onreadystatechange = () => {
+                    if(planeDispoRequest.readyState === 4){
+                        if(planeDispoRequest.status === 200){
+                            const planeInfos = JSON.parse(planeDispoRequest.responseText);
+                            if(planeInfos.success == true){
+                                    resolve(true);
+                            } else {
+                                resolve(false);
+                            }
                         }
                     }
                 }
-        }
-        // loginRequest.setRequestHeader("Accept", "application/json")
-        editRequest.setRequestHeader("Content-type", "application/json");
-        editRequest.send(JSON.stringify(body));
-    } catch(e) {
-        console.log(e);
+                planeDispoRequest.setRequestHeader("Content-type", "application/json");
+                planeDispoRequest.send(JSON.stringify(body));
+            });
     }
-    }
+
+    static getInstructorDisponibility(body: Object): Promise<boolean> {
+
+        const planeDispoRequest = new XMLHttpRequest();
+        return new Promise((resolve) => {
+            planeDispoRequest.open("POST", `${API.address}/instructordisponibility`);
+            planeDispoRequest.onreadystatechange = () => {
+                if(planeDispoRequest.readyState === 4){
+                    if(planeDispoRequest.status === 200){
+                        const planeInfos = JSON.parse(planeDispoRequest.responseText);
+                        if(planeInfos.success == true){
+                                resolve(true);
+                        } else {
+                            resolve(false);
+                        }
+                    }
+                }
+            }
+            planeDispoRequest.setRequestHeader("Content-type", "application/json");
+            planeDispoRequest.send(JSON.stringify(body));
+        });
+}
 }
