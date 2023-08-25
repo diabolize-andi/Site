@@ -1,1 +1,6 @@
-bin/*
+bin/*.js
+bin/**/*.js
+bin/global/*.css
+bin/global/**/*.css
+bin/*.css.map
+bin/**/*.css.map

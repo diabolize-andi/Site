@@ -2,10 +2,10 @@ export class Layout {
     title: string;
     path: Array<string>;
     layout: HTMLDivElement;
-    content: HTMLElement;
+    content: HTMLElement | string;
     container: HTMLElement;
 
-    constructor(title: string, path: Array<string>, content: HTMLElement, container: HTMLElement) {
+    constructor(title: string, path: Array<string>, content: HTMLElement | string, container: HTMLElement) {
         this.title = title;
         this.path = path;
         this.layout = document.createElement("div");
@@ -37,7 +37,11 @@ export class Layout {
 
         const content = document.createElement("div");
         content.classList.add("stb-layout-content");
-        content.appendChild(this.content);
+        if(typeof this.content === "string") {
+            content.innerHTML = this.content;
+        } else {
+            content.appendChild(this.content);
+        }
         this.layout.appendChild(pathHeader);
         this.layout.appendChild(content);
     }

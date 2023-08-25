@@ -130,10 +130,40 @@ export class API {
                 }
             }
     }
+
+    
     // loginRequest.setRequestHeader("Accept", "application/json")
     getCourseParticipationRequest.setRequestHeader("Content-type", "application/json");
     getCourseParticipationRequest.send();
         })
+}
+
+static getPlanes(): Promise<Array<CourseParticipation>> {
+    return new Promise((resolve, reject) => {
+        const getPlanesRequest = new XMLHttpRequest();
+    getPlanesRequest.open("POST", `${API.address}/getcourses`);
+    getPlanesRequest.onreadystatechange = () => {
+        if(getPlanesRequest.readyState === 4){
+            if(getPlanesRequest.status === 200){
+                const response = JSON.parse(getPlanesRequest.responseText);
+                if(response.success == true){
+                    const coursesParticipations: Array<CourseParticipation> = [];
+                    response.coursesParticipations.forEach((courseParticipation: any) => {
+                        coursesParticipations.push(new CourseParticipation(
+                            courseParticipation.user_id,
+                            courseParticipation.course_id,
+                            courseParticipation.participation_date_time,
+                            courseParticipation.status
+                        ));
+                        resolve(coursesParticipations);
+                    });
+                } else {
+                    reject(new Error(response.error));
+                }
+            }
+        }
+    }
+});
 }
 
     static edit(route: string, id: any, body: string) {

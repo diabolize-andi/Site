@@ -25,6 +25,7 @@ setListContent().then(() => {
         courseListLayout = new Layout("Courses", ["Administration", "Management"], courseListContent, layoutContainer);
         const parkingLayout = new Layout("Parking", ["Reservation", "Prestations"], document.createElement("div"), layoutContainer);
         const newCourseLayout = new Layout("Start Course", ["Courses"], document.createElement("div"), layoutContainer);
+        const reservationPlane = new Layout("Book Plane", ["Reservation"], document.createElement("div") ,layoutContainer)
         userListLayout.generate();
         courseListLayout.generate();
         parkingLayout.generate();
@@ -40,7 +41,11 @@ setListContent().then(() => {
         new MenuOption("Parking", parkingLayout),
         new MenuSection(img, "Courses", [
             new MenuOption("Start course", newCourseLayout)
+        ]),
+        new MenuSection(img, "Reservation", [
+            new MenuOption("Plane", reservationPlane)
         ])
+
     ], menuContainer);
     
     menu.generate();
