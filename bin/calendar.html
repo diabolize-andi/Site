@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planning de réservation des avions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        td, th {
+            border: 1px solid black;
+            padding: 0;
+            text-align: center;
+            height: 40px;
+            position: relative;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .quarter {
+            height: 100%;
+            width: 25%;
+            position: absolute;
+            top: 0;
+        }
+        .reserved {
+            background-color: green;
+        }
+        #navigation {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="navigation">
+    <button onclick="changeDate(-1)">Jour précédent</button>
+    <span id="currentDate"></span>
+    <button onclick="changeDate(1)">Jour suivant</button>
+</div>
+
+<table id="planning">
+    <!-- Le tableau sera généré dynamiquement avec JS -->
+</table>
+
+<script>
+    const HOURS = [
+        "00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00",
+        "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00",
+        "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"
+    ];
+    const PLANES = ["salut", "2", "3", "4"];
+    let currentDate = new Date();
+    let planeData = {};
+
+    function initializeData() {
+        for (const plane of PLANES) {
+            planeData[plane] = new Array(96).fill(false);
+        }
+    }
+
+    function updateDataWithReservations() {
+    for (const planeId in apiResponse.data) {
+        const reservations = apiResponse.data[planeId];
+        for (const reservation of reservations) {
+            const startTime = new Date(reservation.start_time);
+            const endTime = new Date(reservation.end_time);
+            const startHour = startTime.getHours();
+            const startMinutes = startTime.getMinutes();
+            const endHour = endTime.getHours();
+            const endMinutes = endTime.getMinutes();
+
+            const startIndex = startHour * 4 + Math.floor(startMinutes / 15);
+
+            // Si les réservations s'étendent sur le jour suivant
+            if (startTime.toDateString() !== endTime.toDateString()) {
+                // Remplir du début de la réservation à la fin de la journée (jusqu'à minuit)
+                for (let i = startIndex; i < 96; i++) {
+                    planeData[planeId][i] = true;
+                }
+                // Pas de remplissage pour le jour suivant
+            } else {
+                const endIndex = endHour * 4 + Math.floor(endMinutes / 15) - 1;
+                for (let i = startIndex; i <= endIndex; i++) {
+                    planeData[planeId][i] = true;
+                }
+            }
+        }
+    }
+}
+
+
+
+
+    function formatDate(date) {
+        return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
+    }
+
+    function generateTable() {
+        const table = document.getElementById("planning");
+        table.innerHTML = '';
+        document.getElementById("currentDate").textContent = formatDate(currentDate);
+
+        let header = "<tr><th>Avions \\ Heures</th>";
+        for (const hour of HOURS) {
+            header += `<th>${hour}</th>`;
+        }
+        header += "</tr>";
+        table.innerHTML += header;
+
+        for (const plane of PLANES) {
+            let row = `<tr><td>${plane}</td>`;
+            for (let hour = 0; hour < 24; hour++) {
+                row += `<td>`;
+                for (let i = 0; i < 4; i++) {
+                    const quarterClass = planeData[plane][hour * 4 + i] ? 'reserved' : '';
+                    row += `<div class="quarter ${quarterClass}" style="left:${i*25}%""></div>`;
+                }
+                row += `</td>`;
+            }
+            row += "</tr>";
+            table.innerHTML += row;
+        }
+    }
+
+    function changeDate(diff) {
+        currentDate.setDate(currentDate.getDate() + diff);
+        initializeData(); // Reset data
+        updateDataWithReservations(); // Update data with reservations
+        generateTable();
+    }
+
+    // Initialisation
+    window.onload = function() {
+        initializeData();
+        updateDataWithReservations();
+        generateTable();
+    };
+
+    const apiResponse = {
+  "data": {
+    "salut": [
+      {
+        "start_time": "2023-08-25 14:45:00",
+        "end_time": "2023-08-25 15:45:00"
+      },
+      {
+        "start_time": "2023-08-25 19:45:00",
+        "end_time": "2023-08-25 20:45:00"
+      }
+    ],
+    "2": [
+      {
+        "start_time": "2023-08-25 15:15:00",
+        "end_time": "2023-08-25 17:15:00"
+      },
+      {
+        "start_time": "2023-08-25 20:15:00",
+        "end_time": "2023-08-25 22:15:00"
+      }
+    ],
+    "3": [
+      {
+        "start_time": "2023-08-25 15:45:00",
+        "end_time": "2023-08-25 18:45:00"
+      },
+      {
+        "start_time": "2023-08-25 20:45:00",
+        "end_time": "2023-08-25 23:45:00"
+      }
+    ],
+    "4": [
+      {
+        "start_time": "2023-08-25 16:15:00",
+        "end_time": "2023-08-25 20:15:00"
+      },
+      {
+        "start_time": "2023-08-25 21:15:00",
+        "end_time": "2023-08-25 01:15:00"
+      },
+      {
+        "start_time": "2023-08-02 23:45:00",
+        "end_time": "2023-08-25 01:45:00"
+      }
+    ]
+  },
+  "messages": {
+    "success": true,
+    "message": "Voici la liste des reservations par avions"
+  }
+};
+</script>
+</body>
+</html>
