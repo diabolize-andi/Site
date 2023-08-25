@@ -1,0 +1,54 @@
+%stb-form {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: space-around;
+
+    &>input, &>div {
+        width: 40%;
+        height: 40px;
+        padding: 1px 2px;
+        border-image: initial;
+        border-width: 2px;
+        border-style: inset;
+        border-color: -internal-light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
+    }
+}
+
+.stb-form-vertical {
+    @extend %stb-form;
+    flex-direction: column;
+}
+
+.stb-form-horizontal {
+    @extend %stb-form;
+    flex-direction: row;
+}
+
+.stb-passwd {
+    $div: &;
+    border: solid black 1px;
+    display: flex;
+
+    input {
+        width: 90%;
+        border: none;
+    }
+
+    img {
+        width: 10%;
+        padding: 2px;
+    }
+
+    input:focus-visible {
+        outline: none;
+    }
+
+    input:focus-visible {
+        #{$div} {
+            outline: -webkit-focus-ring-color auto 1px;
+        }
+    }
+    
+}

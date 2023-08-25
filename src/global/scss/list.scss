@@ -1,0 +1,18 @@
+.stb-list {
+    width: 90%;
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        tbody {
+            tr {
+                border: solid black 1px;
+                td:last-child{
+                    display: flex;
+                    img{
+                        width: 30px;
+                    }
+                }
+            }
+        }
+    }
+}
